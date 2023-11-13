@@ -1,3 +1,4 @@
+import DynamicInputs from "./DynamicInputs";
 
 function App() {
   return (
@@ -5,7 +6,7 @@ function App() {
     <div className="container">
       <div className='row'>
         <div className='col'>
-          <h1> Hello </h1>
+          <DynamicInputs/>
         </div>
       </div>
     </div>
