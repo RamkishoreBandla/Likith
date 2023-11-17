@@ -12,6 +12,7 @@ const DynamicInputs = () => {
     const [result, setResults] = useState([]);
     const [error, setError] = useState(false);
     const [outError, setOutError] = useState(false);
+    const [logoutput, setlogoutput] = useState([]);
 
     let { origin } = window;
     console.log(origin);
@@ -38,6 +39,15 @@ const DynamicInputs = () => {
         newInputs.splice(index, 1);
         setInputs(newInputs);
     };
+
+    const getallPrevInpOut = async (e) => {
+        try {
+            let data = await axios.get(API_URL + "/getall");
+            setlogoutput(data.data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     const fetchResults = async (e) => {
         e.preventDefault();
@@ -79,7 +89,7 @@ const DynamicInputs = () => {
                         {results.length > 0 && outError === false ?
                             <Table hover bordered>
 
-                                {results.map((val, i) => 
+                                {results.map((val, i) =>
 
                                     <tr key={i}>
                                         <td>{val}</td>
@@ -191,6 +201,28 @@ const DynamicInputs = () => {
                         </span>}
                 </div>
 
+            </div>
+
+            <div className='container mt-3'>
+                <div className='row'>
+                    <div className='col'>
+                        <button className='btn btn-danger' onClick={(e) => { getallPrevInpOut(e) }}>Get All Previous Results</button>
+                    </div>
+                </div>
+                <div className='row mt-2'>
+                    <div className='col'>
+                        {logoutput.length > 0 ?
+                            <Table>
+                                <tr><td>Input</td><td>Output</td></tr>
+                                {logoutput.map((e, i) => <tr key={i}>
+                                    <td>{JSON.stringify(e.input)}</td>
+                                    <td>{JSON.stringify(e.output)}</td>
+                                </tr>)}
+                            </Table>
+                            :
+                            null}
+                    </div>
+                </div>
             </div>
 
         </>

@@ -100,4 +100,16 @@ router.post('/getResults', async function (req, res, next) {
   }
 });
 
+
+router.get("/getall",async(req,res)=>{
+  try {
+    let data = await modelOps.getAllInputOutput();
+    res.json(data)
+  } catch (error) {
+    console.log(error);
+    res.statusCode = error.status || 500;
+    res.json(error);
+  }
+})
+
 module.exports = router;
