@@ -39,17 +39,68 @@ const ACoc = (chars) => {
   return temp;
 }
 
-const ECC = (inputs) => {
-  let output = [];
-  //write code
+const ECC = (chars) => {
+  const numChars = chars.length;
+  const mostBlocks = Math.max(...chars.map(c => c.length));
+  const op = [];
 
-  return output;
+  for (let testNum = 1; testNum <= mostBlocks; testNum++) {
+      const tmp1 = [];
+      process.stdout.write(`test # ${testNum}: `);
+
+      for (const c of chars) {
+          if (testNum <= c.length) {
+              process.stdout.write(`${c[testNum - 1]} `);
+              tmp1.push(c[testNum - 1]);
+          } else {
+              process.stdout.write(`* `);
+              tmp1.push('*');
+          }
+      }
+      console.log();
+      op.push(tmp1);
+  }
+
+  console.log(op);
+  return op;
 }
 
-const BCC = (inputs) => {
+const BCC = (chars, base) => {
   let output = [];
-  //write code
+  const baseLength = base.length;
 
+  if (baseLength !== chars.length) {
+    console.log("Not a valid base input");
+    let err= new Error("Not a valid base input");
+    throw err;
+  }
+
+  for (const c of base) {
+    if (!chars.some(sublist => sublist.includes(c))) {
+      console.log("Not a valid base input");
+      let err= new Error("Not a valid base input");
+      throw err;
+    }
+  }
+
+  let index = -1;
+  console.log(base);
+  base.sort();
+
+  for (const i of chars) {
+    index++;
+    const temp = [...base];
+
+    for (let j = 0; j < i.length; j++) {
+      if (i[j] !== base[index]) {
+        temp[index] = i[j];
+        console.log(temp);
+        output.push([...temp]);
+      }
+    }
+  }
+
+  console.log(output);
   return output;
 }
 
@@ -64,7 +115,7 @@ router.post('/getResults', async function (req, res, next) {
     let inputArr = [];
     for (let eval of inputs) {
       console.log(eval);
-      let value = eval['value'].split(",")
+      let value = eval['value'].split(",").map(e=>e.trim());
       inputArr.push(value)
     }
 
@@ -72,8 +123,8 @@ router.post('/getResults', async function (req, res, next) {
     let outputs = []
 
     if (choice === 'BCC') {
-
-      outputs = BCC(inputArr);
+      let base = req.body.baseinpt.split(",").map(e=>e.trim());
+      outputs = BCC(inputArr, base);
 
     }
     else if (choice === 'ECC') {
@@ -86,29 +137,29 @@ router.post('/getResults', async function (req, res, next) {
     //write API request to store result and input
     let storedData = await modelOps.storeInputandOutput(req.body, outputs);
 
-    outputs = outputs.length > 0 ? outputs : [
-      ['A1', 'B1', 'C1'], ['A1', 'B1', 'C2'], ['A1', 'B2', 'C1'], ['A1', 'B2', 'C2'], ['A1', 'B3', 'C1'], ['A1', 'B3', 'C2'],
-      ['A2', 'B1', 'C1'], ['A2', 'B1', 'C2'], ['A2', 'B2', 'C1'], ['A2', 'B2', 'C2'], ['A2', 'B3', 'C1'], ['A2', 'B3', 'C2'],
-      ['A3', 'B1', 'C1'], ['A3', 'B1', 'C2'], ['A3', 'B2', 'C1'], ['A3', 'B2', 'C2'], ['A3', 'B3', 'C1'], ['A3', 'B3', 'C2']
-    ]
+    // outputs = outputs.length > 0 ? outputs : [
+    //   ['A1', 'B1', 'C1'], ['A1', 'B1', 'C2'], ['A1', 'B2', 'C1'], ['A1', 'B2', 'C2'], ['A1', 'B3', 'C1'], ['A1', 'B3', 'C2'],
+    //   ['A2', 'B1', 'C1'], ['A2', 'B1', 'C2'], ['A2', 'B2', 'C1'], ['A2', 'B2', 'C2'], ['A2', 'B3', 'C1'], ['A2', 'B3', 'C2'],
+    //   ['A3', 'B1', 'C1'], ['A3', 'B1', 'C2'], ['A3', 'B2', 'C1'], ['A3', 'B2', 'C2'], ['A3', 'B3', 'C1'], ['A3', 'B3', 'C2']
+    // ]
 
     res.json(outputs);
   } catch (error) {
     console.log(error);
     res.statusCode = error.status || 500;
-    res.json(error);
+    res.json(error.message);
   }
 });
 
 
-router.get("/getall",async(req,res)=>{
+router.get("/getall", async (req, res) => {
   try {
     let data = await modelOps.getAllInputOutput();
     res.json(data)
   } catch (error) {
     console.log(error);
     res.statusCode = error.status || 500;
-    res.json(error);
+    res.json(error.message);
   }
 })
 

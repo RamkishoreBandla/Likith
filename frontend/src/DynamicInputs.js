@@ -4,7 +4,9 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import axios from 'axios';
 import Alert from 'react-bootstrap/Alert'
-import Table from 'react-bootstrap/Table'
+import Table from 'react-bootstrap/Table';
+import { MdDeleteOutline } from "react-icons/md";
+import { FaPlus } from "react-icons/fa";
 
 const DynamicInputs = () => {
     const [inputs, setInputs] = useState([{ name: '', value: '' }]);
@@ -13,6 +15,8 @@ const DynamicInputs = () => {
     const [error, setError] = useState(false);
     const [outError, setOutError] = useState(false);
     const [logoutput, setlogoutput] = useState([]);
+    const [baseInput, setBaseInpt] = useState("");
+    const [errMsg, setErrMsg] = useState("")
 
     let { origin } = window;
     console.log(origin);
@@ -53,7 +57,8 @@ const DynamicInputs = () => {
         e.preventDefault();
         let reqObj = {
             criteria: selectedOption,
-            characteristics: inputs
+            characteristics: inputs,
+            baseinpt: baseInput
         };
         console.log(reqObj);
 
@@ -72,6 +77,8 @@ const DynamicInputs = () => {
                 setResults(response.data);
             } catch (error) {
                 setOutError(true);
+                console.log(error);
+                setErrMsg(error?.response?.data);
             }
 
         }
@@ -88,14 +95,14 @@ const DynamicInputs = () => {
                     <Accordion.Body>
                         {results.length > 0 && outError === false ?
                             <Table hover bordered>
+                                <tbody>
+                                    {results.map((val, i) =>
 
-                                {results.map((val, i) =>
-
-                                    <tr key={i}>
-                                        <td>{val}</td>
-                                    </tr>
-                                )}
-
+                                        <tr key={i}>
+                                            <td className='text-primary'>[{val.join(",")}]</td>
+                                        </tr>
+                                    )}
+                                </tbody>
 
                             </Table>
                             :
@@ -111,10 +118,15 @@ const DynamicInputs = () => {
 
     return (
         <>
+            <div className='container mt-5'>
+                <div className='row text-center'>
+                    <h1 className='text-primary'>Welcome to ISP</h1>
+                </div>
+            </div>
             <div className='container'>
                 <div className='row mt-5'>
                     <div className='col-md-6'>
-                        <h4>Characterisic Name</h4>
+                        <h4>&nbsp;&nbsp;&nbsp;&nbsp; Characterisic Name</h4>
                     </div>
                     <div className='col-md-6'>
                         <h4>Characterisic Value</h4>
@@ -138,15 +150,16 @@ const DynamicInputs = () => {
                                 <input
                                     className='form-control'
                                     type="text"
-                                    placeholder="type format: A1,B1,C1"
+                                    placeholder="eg format: A1,B1,C1"
                                     name="value"
                                     value={input.value}
                                     onChange={(e) => handleInputChange(index, e)}
                                 /></div>
                             <div className='col-md-2'>
-                                <button type="button" className='form-control btn btn-danger' onClick={() => handleRemoveInput(index)}>
-                                    Remove
-                                </button>
+                                <span className='text-danger'>
+                                <MdDeleteOutline style={{fontSize:'30px',cursor:'pointer'}}  onClick={() => handleRemoveInput(index)} color='red' />
+                                </span>
+                                
                             </div>
                         </div>
                     ))}
@@ -155,9 +168,10 @@ const DynamicInputs = () => {
 
                 <div className='row mt-2'>
                     <div className='col-md-3'>
-                        <button className='btn btn-success' type="button" onClick={handleAddInput}>
+                        {/* <button className='btn btn-success' type="button" onClick={handleAddInput}>
                             Add More
-                        </button>
+                        </button> */}
+                        <FaPlus className='text-primary' onClick={handleAddInput} style={{fontSize:'25px',cursor:'pointer'}}/>
                     </div>
                 </div>
                 <div className='row mt-2'>
@@ -178,6 +192,21 @@ const DynamicInputs = () => {
                     </div>
                 </div>
 
+                {selectedOption === 'BCC' ?
+                    <div className='row mt-2'>
+                        <div className='col'>
+                            Enter Base :
+                            <input
+                                className='form-control'
+                                type="text"
+                                placeholder="eg : A1,B1,C1"
+                                name="value"
+                                value={baseInput}
+                                onChange={(e) => setBaseInpt(e.target.value)}
+                            />
+                        </div>
+                    </div> : null}
+
                 <div className='row mt-2'>
                     <button className='btn btn-primary' onClick={(e) => { fetchResults(e) }}>Fetch</button>
                 </div>
@@ -188,7 +217,10 @@ const DynamicInputs = () => {
                 <div className='row'>
                     {error === true ?
                         <div>
-                            Missing values in input
+                            <Alert variant='danger'>
+                            Missing values in the input
+                            </Alert>
+                           
                         </div>
                         :
                         <span>
@@ -196,7 +228,7 @@ const DynamicInputs = () => {
                                 <AccordionResult results={result} />
                             </div> : null :
                                 <Alert variant="danger">
-                                    Failed to show output
+                                    {errMsg}
                                 </Alert>}
                         </span>}
                 </div>
@@ -206,18 +238,23 @@ const DynamicInputs = () => {
             <div className='container mt-3'>
                 <div className='row'>
                     <div className='col'>
-                        <button className='btn btn-danger' onClick={(e) => { getallPrevInpOut(e) }}>Get All Previous Results</button>
+                        <button className='btn btn-warning' onClick={(e) => { getallPrevInpOut(e) }}>Get All Previous Results</button>
                     </div>
                 </div>
-                <div className='row mt-2'>
+                <div className='row mt-3'>
                     <div className='col'>
                         {logoutput.length > 0 ?
-                            <Table>
-                                <tr><td>Input</td><td>Output</td></tr>
-                                {logoutput.map((e, i) => <tr key={i}>
-                                    <td>{JSON.stringify(e.input)}</td>
-                                    <td>{JSON.stringify(e.output)}</td>
-                                </tr>)}
+                            <Table hover bordered>
+                                <thead className='bg-black'>
+
+                                    <tr><th className='text-danger'>Input</th><th className='text-danger'>Output</th></tr>
+                                </thead>
+                                <tbody>
+                                    {logoutput.map((e, i) => <tr key={i}>
+                                        <td className='text-primary' >{JSON.stringify(e.input)}</td>
+                                        <td className='text-success'>{JSON.stringify(e.output)}</td>
+                                    </tr>)}
+                                </tbody>
                             </Table>
                             :
                             null}
