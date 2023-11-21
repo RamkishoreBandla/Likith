@@ -175,9 +175,9 @@ const DynamicInputs = () => {
                     </div>
                 </div>
                 <div className='row mt-2'>
-                    <div className='col'>
+                    <div className='col-md-2'>
 
-                        <DropdownButton
+                       <DropdownButton
                             id="dropdown-button-dark-example2"
                             variant="secondary"
                             title="Select criteria"
@@ -190,7 +190,11 @@ const DynamicInputs = () => {
                         </DropdownButton>
 
                     </div>
+                  
                 </div>
+                { selectedOption!==''? <div className='row mt-2 text-danger'>
+                      &nbsp; &nbsp; Selected:&nbsp; {selectedOption}
+                    </div>:null}
 
                 {selectedOption === 'BCC' ?
                     <div className='row mt-2'>

@@ -1,26 +1,31 @@
 function baseCriteria(chars, base) {
     let output = [];
-    const baseLength = base.length;
+    let baseLength = base.length;
 
     if (baseLength !== chars.length) {
-        console.log("Not a valid base input");
+        console.log("not a valid base input");
         return;
     }
 
-    for (const c of base) {
+    for (let c of base) {
         if (!chars.some(sublist => sublist.includes(c))) {
-            console.log("Not a valid base input");
+            console.log("not a valid base input");
             return;
         }
     }
 
     let index = -1;
     console.log(base);
-    base.sort();
+    let t=base;
+    output.push(t)
 
-    for (const i of chars) {
+    // Sort the base and chars arrays
+    base.sort();
+    chars.forEach(sublist => sublist.sort());
+
+    chars.forEach(i => {
         index++;
-        const temp = [...base];
+        let temp = [...base];
 
         for (let j = 0; j < i.length; j++) {
             if (i[j] !== base[index]) {
@@ -29,17 +34,16 @@ function baseCriteria(chars, base) {
                 output.push([...temp]);
             }
         }
-    }
+    });
 
     console.log(output);
-    return output;
 }
 
 const chars = [
-    ['A1', 'A2', 'A3'],
     ['B1', 'B2', 'B3'],
+    ['A1', 'A2'],
     ['C1', 'C2']
 ];
-const base = ['B2', 'A1', 'C2'];
+const base = ['A1', 'C1', 'B3'];
 
 baseCriteria(chars, base);
