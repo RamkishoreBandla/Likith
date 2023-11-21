@@ -70,13 +70,16 @@ const BCC = (chars, base) => {
     const base_length = base.length;
     if (base.length !== chars.length) {
       console.error("not a valid base input");
-      return;
+      let err= new Error('not a valid base input');
+      throw err
+      
     }
   
     for (const c of base) {
       if (!chars.some((sublist) => sublist.includes(c))) {
         console.error("not a valid base input");
-        return;
+        let err= new Error('not a valid base input');
+      throw err
       }
     }
   
