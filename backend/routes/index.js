@@ -66,42 +66,41 @@ const ECC = (chars) => {
 }
 
 const BCC = (chars, base) => {
-  let output = [];
-  const baseLength = base.length;
-
-  if (baseLength !== chars.length) {
-    console.log("Not a valid base input");
-    let err= new Error("Not a valid base input");
-    throw err;
-  }
-
-  for (const c of base) {
-    if (!chars.some(sublist => sublist.includes(c))) {
-      console.log("Not a valid base input");
-      let err= new Error("Not a valid base input");
-      throw err;
+    const output_base = [];
+    const base_length = base.length;
+    if (base.length !== chars.length) {
+      console.error("not a valid base input");
+      let err= new Error('not a valid base input');
+      throw err
+      
     }
-  }
-
-  let index = -1;
-  console.log(base);
-  base.sort();
-
-  for (const i of chars) {
-    index++;
-    const temp = [...base];
-
-    for (let j = 0; j < i.length; j++) {
-      if (i[j] !== base[index]) {
-        temp[index] = i[j];
-        console.log(temp);
-        output.push([...temp]);
+  
+    for (const c of base) {
+      if (!chars.some((sublist) => sublist.includes(c))) {
+        console.error("not a valid base input");
+        let err= new Error('not a valid base input');
+      throw err
       }
     }
-  }
-
-  console.log(output);
-  return output;
+  
+    let index = -1;
+    output_base.push(base);
+    base.sort();
+    chars.sort();
+  
+    for (const char of chars) {
+      index++;
+      for (let j = 0; j < char.length; j++) {
+        const temp = base.slice();
+        if (char[j] !== base[index]) {
+          temp[index] = char[j];
+          output_base.push(temp);
+        }
+      }
+    }
+  
+    console.log(output_base);
+    return output_base;
 }
 
 /* GET home page. */
